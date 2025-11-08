@@ -21,13 +21,16 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+#include <time.h>
 
 
 double CalcPi(int n);
+double GetTime(void);
 
 int main(int argc, char **argv)
 {
     int n = 2000000000;
+   
     const double fPi25DT = 3.141592653589793238462643;
     double fPi;
     double fTimeStart, fTimeEnd;
@@ -43,18 +46,16 @@ int main(int argc, char **argv)
         return 1;
     }
     
-    // get initial time 
-
-    /* the calculation is done here*/
+    /* measure time of CalcPi only */
+    fTimeStart = GetTime();
     fPi = CalcPi(n);
+    fTimeEnd = GetTime();
 
-    //get final fime
-    
     printf("\npi is approximately = %.20f \nError               = %.20f\n",
-           fPi, fabs(fPi - fPi25DT));
+        fPi, fabs(fPi - fPi25DT));
     
-    // report time
-
+    /* report time for CalcPi */
+    printf("CalcPi elapsed time = %.6f seconds\n", fTimeEnd - fTimeStart);
     return 0;
 }
 
@@ -78,4 +79,13 @@ double CalcPi(int n)
         fSum += f(fX);
     }
     return fH * fSum;
+}
+
+
+/* high-resolution timer */
+double GetTime(void)
+{
+    struct timespec t;
+    clock_gettime(CLOCK_MONOTONIC, &t);
+    return (double)t.tv_sec + (double)t.tv_nsec * 1e-9;
 }
